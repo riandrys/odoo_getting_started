@@ -1,0 +1,44 @@
+version: '3.1'
+services:
+  web:
+    container_name: odoo-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 8069-8072:8069-8072
+    volumes:
+      - ./:/odoo
+    env_file:
+      - .env
+    networks:
+      opoo_web_network:
+        aliases:
+          - opoo-web-api
+        ipv4_address: 172.82.0.3
+  db:
+    container_name: odoo-db
+    image: postgres:15.1
+    ports:
+      - 5433:5432
+    env_file:
+      - .env
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    networks:
+      opoo_web_network:
+        aliases:
+          - opoo-web-db
+        ipv4_address: 172.82.0.2
+networks:
+  opoo_web_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.82.0.0/16
+
+volumes:
+  odoo-web-data:
+  odoo-db-data:
